@@ -63,6 +63,11 @@ public class projectClientCode {
 		String name = s.nextLine();
 		outToServer.writeBytes(name + "\r\n");
 		
+		System.out.printf("\n\t-= Hi \s! =-\n Would you like to create a new lobby (1), or join an existing lobby? (2): ", name);
+		String lobbyChoice = s.nextLine();
+		outToServer.writeBytes(lobbyChoice + "\r\n");
+		
+		
 		String play = s.nextLine();
 		
 		while(!play.toUpperCase().equals("QUIT")) {
