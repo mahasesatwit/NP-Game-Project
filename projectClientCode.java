@@ -42,7 +42,7 @@ public class projectClientCode {
 		
 	public static void main(String argv[]) throws Exception {
 		// TODO Auto-generated method stub
-		Socket connectionSocket = new Socket("10.220.35.205", 1234);
+		Socket connectionSocket = new Socket("localhost", 1234);
 		
 		DataOutputStream outToServer = new DataOutputStream(connectionSocket.getOutputStream());
 		BufferedReader inFromServer = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
@@ -63,7 +63,7 @@ public class projectClientCode {
 		String name = s.nextLine();
 		outToServer.writeBytes(name + "\r\n");
 		
-		System.out.printf("\n\t-= Hi \s! =-\n Would you like to create a new lobby (1), or join an existing lobby? (2): ", name);
+		System.out.printf("\n\t-= Hi %s! =-\n Would you like to create a new lobby (1), or join an existing lobby? (2): ", name);
 		String lobbyChoice = s.nextLine();
 		outToServer.writeBytes(lobbyChoice + "\r\n");
 		

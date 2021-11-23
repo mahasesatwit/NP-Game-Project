@@ -1,12 +1,18 @@
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class projectServerCode {
 	static class ClientRequest implements Runnable {
-		Socket connectionSocket;
+		private String name;
+		private Scanner in;
+		private PrintWriter out;
+		private Socket socket;
 		
 		ClientRequest(Socket c){
-			connectionSocket = c;
+			socket = c;
 			
 		}
 
@@ -14,7 +20,32 @@ public class projectServerCode {
 	public void run() {
 		// TODO Auto-generated method stub
 		
+		try {
+			in = new Scanner(socket.getInputStream());
+			out = new PrintWriter(socket.getOutputStream(), true);
+			
+			while (true) {
+				
+				
+				
+				
+				
+			}
+			
+		} 
+		
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+			
+			
+			
+			
 	}
+	
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
