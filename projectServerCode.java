@@ -68,8 +68,24 @@ public class projectServerCode {
 		
 		
 		try {
+			// this String name will need to be replaced...
+			String name; 
+			
 			BufferedReader in = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 			DataOutputStream out = new DataOutputStream(connectionSocket.getOutputStream());
+			
+			//this will need to be modified. 
+			String clientMessage ="";
+			name = in.readLine();
+			for(int i = 0; i < players.size();i++) {
+				if(players.get(i).getConnection()==connectionSocket) {
+					players.get(i).setName(name);
+				}
+			}
+			for(int i = 0; i < prevMsg.size();i++) {
+				out.writeBytes(prevMsg.get(i));
+			}
+			sendToAll(name + " has joined the chat!\n");
 			
 			while (true) {
 				
