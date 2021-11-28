@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -24,7 +25,9 @@ public class projectServerCode {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 	static class Players {
 		String name;
+		String lobbyChoice;
 		Socket connection;
+		
 		
 		Players(Socket c){
 			connection = c;
@@ -38,6 +41,14 @@ public class projectServerCode {
 			return name;
 		}
 		
+		public void setLobbyChoice(String i) {
+			lobbyChoice = i;
+		}
+		
+		public String getLobbyChoice() {
+			return lobbyChoice;
+		}
+		
 		public Socket getConnection() {
 			return connection;
 		}
@@ -47,6 +58,9 @@ public class projectServerCode {
 ////////////////////////////////////////////////////////////////////////////////////////////////////	
 	static List<Players> players = new ArrayList<>();
 	static List<String> prevMsg = new ArrayList<>();
+	
+	static String[] board;
+	static String turn;
 	
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // ClientRequest: server-side socket handling
@@ -70,16 +84,67 @@ public class projectServerCode {
 		try {
 			// this String name will need to be replaced...
 			String name; 
+			String lobbyChoice;
 			
 			BufferedReader in = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 			DataOutputStream out = new DataOutputStream(connectionSocket.getOutputStream());
 			
 			//this will need to be modified. 
-			String clientMessage ="";
+			String clientMessage = "";
 			name = in.readLine();
-			for(int i = 0; i < players.size();i++) {
-				if(players.get(i).getConnection()==connectionSocket) {
+			lobbyChoice = in.readLine();
+			for(int i = 0; i < players.size(); i++) {
+				if(players.get(i).getConnection() == connectionSocket) {
 					players.get(i).setName(name);
+					
+					DataOutputStream outToClient = new DataOutputStream(players.get(i).getConnection().getOutputStream());
+					
+					
+					if (lobbyChoice.contentEquals("1") == true) {
+						//user chooses to create new lobby
+						players.get(i).setLobbyChoice("1");
+						System.out.println("Code 01");
+						outToClient.writeBytes("User Chose to Create New Lobby! (01)\r\n");
+						
+					}
+					if (lobbyChoice.contentEquals("2") == true) {
+						//user chooses to join existing lobby
+						players.get(i).setLobbyChoice("2");
+						System.out.println("Code 02");
+						outToClient.writeBytes("User Chose to Join Existing Lobby! (02)\r\n");
+					}
+					
+					
+					
+//					else if (lobbyChoice.contentEquals("1") == false && lobbyChoice.contentEquals("2") == false) {
+//						
+//						outToClient.writeBytes("Server: You must choose to either create a new lobby (1), or join an existing lobby (2): ");
+//						
+//						lobbyChoice = in.readLine();
+//						
+//						if (lobbyChoice.contentEquals("1") == true) {
+//							//user chooses to create new lobby
+//							players.get(i).setLobbyChoice("1");
+//							System.out.println("Code 11");
+//							outToClient.writeBytes("User Chose to Create New Lobby! (11)\r\n");
+//						}
+//						if (lobbyChoice.contentEquals("2") == true) {
+//							//user chooses to join existing lobby
+//							players.get(i).setLobbyChoice("2");
+//							System.out.println("Code 12");
+//							outToClient.writeBytes("User Chose to Join Existing Lobby! (12)\r\n");
+//
+//						}
+//						
+//						else {
+//							outToClient.writeBytes("Server: user entered invalid input, terminating connection...");
+//							closeConnection(players.get(i).getName());
+//						}
+//						
+//					}
+					
+					
+					
 				}
 			}
 			for(int i = 0; i < prevMsg.size();i++) {
@@ -114,9 +179,10 @@ public class projectServerCode {
 		// TODO Auto-generated method stub
 		
 		ServerSocket serverSocket;
+		int port = 1234;
 		try {
-			serverSocket = new ServerSocket(1234);
-			System.out.println("This server is ready to receive");
+			serverSocket = new ServerSocket(port);
+			System.out.println("Server listening to port " + port);
 
 			while (true) {
 				Socket connectionSocket = serverSocket.accept();
@@ -138,22 +204,40 @@ public class projectServerCode {
 
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+//displayGameBoard(): displays current game board
+////////////////////////////////////////////////////////////////////////////////////////////////////
+	public static void displayGameBoard() {
+		//this was sourced from an existing GitHub game
+		//https://gist.github.com/xaviablaza-zz/3844825
+		//this needs to be altered to be sent to the players
+		
+		
+		System.out.println("/---|---|---\\");
+		System.out.println("| " + board[0] + " | " + board[1] + " | " + board[2] + " |");
+		System.out.println("|-----------|");
+		System.out.println("| " + board[3] + " | " + board[4] + " | " + board[5] + " |");
+		System.out.println("|-----------|");
+		System.out.println("| " + board[6] + " | " + board[7] + " | " + board[8] + " |");
+		System.out.println("/---|---|---\\");
+	}
+	
+////////////////////////////////////////////////////////////////////////////////////////////////////
 // sendToAll(String msg, String name): sends a name and string message to users connected to the server 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 	public static void sendToAll(String msg, String name) throws IOException {
 		if(prevMsg.size() < 5) {
-			prevMsg.add(name+": "+msg);
+			prevMsg.add(name + ": " + msg);
 		}
 		else {
 			prevMsg.remove(0);
-			prevMsg.add(name+": "+msg);
+			prevMsg.add(name + ": " + msg);
 		}
-		for(int i = 0; i < players.size();i++) {
+		for(int i = 0; i < players.size(); i++) {
 			if(name.equals(players.get(i).getName())) {
 				continue;
 			}
 			DataOutputStream outToClient = new DataOutputStream(players.get(i).getConnection().getOutputStream());
-			outToClient.writeBytes(name+": "+msg);
+			outToClient.writeBytes(name + ": " + msg);
 		}
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -167,7 +251,7 @@ public class projectServerCode {
 			prevMsg.remove(0);
 			prevMsg.add(msg);
 		}
-		for(int i = 0; i < players.size();i++) {
+		for(int i = 0; i < players.size(); i++) {
 			DataOutputStream outToClient = new DataOutputStream(players.get(i).getConnection().getOutputStream());
 			outToClient.writeBytes(msg);
 		}
@@ -177,7 +261,7 @@ public class projectServerCode {
 // closeConnection: closes TCP connection of specific user, removes from players
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 	public static void closeConnection(String name) {
-		for(int i = 0; i < players.size();i++) {
+		for(int i = 0; i < players.size(); i++) {
 			if(name.equals(players.get(i).getName())) {
 				players.remove(i);
 			}
