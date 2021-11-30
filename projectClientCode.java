@@ -69,14 +69,34 @@ public class projectClientCode {
 		//if that makes any sense... Obviously not going to stick you with all that just wanted to write it down so I knew what to do later
 		
 		
-		System.out.println("\t-= Welcome to TCP Tic-Tac-Toe! =-\nbefore you can play, please tell us your name: ");
+		System.out.print("\t-= Welcome to TCP Tic-Tac-Toe! =-\nbefore you can play, please tell us your name: ");
 		Scanner s = new Scanner(System.in);
 		String name = s.nextLine();
 		outToServer.writeBytes(name + "\r\n");
 		
-		System.out.printf("\n\t-= Hi %s! =-\n Would you like to create a new lobby (1), or join an existing lobby? (2): ", name);
+		System.out.print("\t-= Hi " + name + "! =-\nWould you like to create a new lobby (1), or join an existing lobby? (2): ");
 		String lobbyChoice = s.nextLine();
 		outToServer.writeBytes(lobbyChoice + "\r\n");
+		
+		
+		if (lobbyChoice.contentEquals("1")) {
+			System.out.print(name + " chose to create a new lobby!\n");
+		}
+		if (lobbyChoice.contentEquals("2")) {
+			System.out.print(name + " chose to join an existing lobby!\n");
+		}
+		
+		
+		System.out.print("Please type the name of the lobby: ");
+		String lobbyNameSelect = s.nextLine();
+		outToServer.writeBytes(lobbyNameSelect);
+		
+		if (lobbyChoice.contentEquals("1")) {
+			System.out.print(name + " created lobby '" + lobbyNameSelect +  "'!\n");
+		}
+		if (lobbyChoice.contentEquals("2")) {
+			System.out.print(name + " joined lobby '" + lobbyNameSelect + "'!\n");
+		}
 		
 		
 		String play = s.nextLine();
