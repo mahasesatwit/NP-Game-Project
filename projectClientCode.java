@@ -84,6 +84,7 @@ public class projectClientCode {
 		}
 		if (lobbyChoice.contentEquals("2")) {
 			System.out.print(name + " chose to join an existing lobby!\n");
+// we need to figure out how to tell if the lobby exists or not
 		}
 		
 		
@@ -96,6 +97,7 @@ public class projectClientCode {
 		}
 		if (lobbyChoice.contentEquals("2")) {
 			System.out.print(name + " joined lobby '" + lobbyNameSelect + "'!\n");
+// we need to figure out how to tell if the lobby exists or not
 		}
 		
 		
